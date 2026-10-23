@@ -8,7 +8,8 @@ intents.message_content = True
 #$
 bot = commands.Bot(command_prefix='$', intents=intents)
 
-folder = "saved_images"
+img_folder = "saved_images"
+check_folder = "checked_images"
 
 @bot.event
 async def on_ready():
@@ -24,10 +25,13 @@ async def saludo(ctx):
 async def save(ctx):
     if ctx.message.attachments:
 
+        if not os.path.exists(img_folder):
+            os.makedirs(img_folder)
+
         for attachment in ctx.message.attachments:
             file_name = attachment.filename
 
-            file_url = os.path.join(folder, file_name)
+            file_url = os.path.join(img_folder, file_name)
 
             await attachment.save(f'./{file_name}')
 
@@ -40,7 +44,7 @@ from model import get_class
 
 @bot.command()
 async def show(ctx):
-    files = os.listdir(folder)
+    files = os.listdir(img_folder)
 
     if len(files) == 0:
         await ctx.send('No hay archivos guardados')
@@ -52,10 +56,13 @@ async def show(ctx):
 async def analyze(ctx):
     if ctx.message.attachments:
 
+        if not os.path.exists(check_folder):
+            os.makedirs(check_folder)
+
         for attachment in ctx.message.attachments:
             file_name = attachment.filename
 
-            file_url = attachment.url
+            file_url = os.path.join(check_folder, file_name)
 
             await attachment.save(f'./{file_name}')
 
