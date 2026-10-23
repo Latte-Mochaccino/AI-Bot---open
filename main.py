@@ -1,11 +1,14 @@
 from discord.ext import commands
 import discord
+import os
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 #$
 bot = commands.Bot(command_prefix='$', intents=intents)
+
+folder = "saved_images"
 
 @bot.event
 async def on_ready():
@@ -24,7 +27,7 @@ async def save(ctx):
         for attachment in ctx.message.attachments:
             file_name = attachment.filename
 
-            file_url = attachment.url
+            file_url = os.path.join(folder, file_name)
 
             await attachment.save(f'./{file_name}')
 
@@ -34,6 +37,16 @@ async def save(ctx):
         await ctx.send('No hay archivos adjuntos para guardar')
 
 from model import get_class
+
+@bot.command()
+async def show(ctx):
+    files = os.listdir(folder)
+
+    if len(files) == 0:
+        await ctx.send('No hay archivos guardados')
+    else:
+        for file in files:
+            await ctx.send(file)
 
 @bot.command()
 async def analyze(ctx):
